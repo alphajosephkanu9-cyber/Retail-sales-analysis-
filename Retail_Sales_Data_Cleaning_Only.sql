@@ -1,3 +1,15 @@
+ALTER TABLE sales
+    DROP COLUMN `myunknowncolumn_[0]`,
+    DROP COLUMN `myunknowncolumn_[1]`,
+    DROP COLUMN `myunknowncolumn_[2]`,
+    DROP COLUMN `myunknowncolumn_[3]`,
+    DROP COLUMN `myunknowncolumn_[4]`,
+    DROP COLUMN `myunknowncolumn_[5]`,
+    DROP COLUMN `myunknowncolumn_[6]`;
+
+
+
+
 -- RETAIL SALES ANALYSIS — DATA CLEANING ONLY
 -- MySQL 8.0+
 -- Creates cleaned working tables while preserving all original source tables.
@@ -26,7 +38,7 @@ DROP TABLE IF EXISTS sales_duplicate_review;
 CREATE TABLE sales_duplicate_review AS
 SELECT
     Transaction_ID,
-    Sale_Date,
+    order_Date,
     Customer_ID,
     Product_ID,
     Store_ID,
@@ -36,7 +48,7 @@ SELECT
     COUNT(*) AS duplicate_count
 FROM sales
 GROUP BY
-    Transaction_ID, Sale_Date, Customer_ID, Product_ID, Store_ID,
+    Transaction_ID, order_Date, Customer_ID, Product_ID, Store_ID,
     Quantity, Unit_Price, Discount
 HAVING COUNT(*) > 1;
 
@@ -53,7 +65,7 @@ CREATE TABLE sales_cleaned AS
 WITH ranked_sales AS (
     SELECT
         Transaction_ID,
-        Sale_Date,
+        order_Date,
         Customer_ID,
         Product_ID,
         Store_ID,
@@ -62,7 +74,7 @@ WITH ranked_sales AS (
         Discount,
         ROW_NUMBER() OVER (
             PARTITION BY
-                Transaction_ID, Sale_Date, Customer_ID, Product_ID, Store_ID,
+                Transaction_ID, order_Date, Customer_ID, Product_ID, Store_ID,
                 Quantity, Unit_Price, Discount
             ORDER BY Transaction_ID
         ) AS duplicate_row_number
@@ -70,7 +82,7 @@ WITH ranked_sales AS (
 )
 SELECT
     Transaction_ID,
-    Sale_Date,
+    order_Date,
     Customer_ID,
     Product_ID,
     Store_ID,
